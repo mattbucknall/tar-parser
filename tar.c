@@ -28,6 +28,19 @@
 #endif
 
 
+static size_t strnlen_(const char* s, size_t maxlen) {
+    size_t len;
+
+    for (len = 0; len < maxlen; len++) {
+        if ( s[len] == '\0' ) {
+            break;
+        }
+    }
+
+    return len;
+}
+
+
 static uint64_t parse_octal(const uint8_t* field, size_t n_bytes) {
     const uint8_t* const buffer_e = field + n_bytes;
     uint64_t value = 0;
@@ -51,7 +64,7 @@ static uint64_t parse_octal(const uint8_t* field, size_t n_bytes) {
 static const char* parse_string(const uint8_t* field, size_t n_bytes, tar_string_buffer_t* buffer) {
     size_t len;
 
-    len = strnlen((const char*) field, n_bytes);
+    len = strnlen_((const char*) field, n_bytes);
     memcpy(buffer->str, field, len);
     buffer->str[len] = '\0';
 
@@ -157,7 +170,7 @@ const char* tar_get_filename(const tar_header_t* header, tar_string_buffer_t* bu
     uint32_t suffix_len;
 
     // get length of filename prefix
-    prefix_len = strnlen((const char*) (header->filename_prefix), 155);
+    prefix_len = strnlen_((const char*) (header->filename_prefix), 155);
 
     // copy prefix into buffer
     memcpy(buffer->str, header->filename_prefix, prefix_len);
